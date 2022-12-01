@@ -30,5 +30,5 @@ Use uses(AForm f) {
 }
 
 Def defs(AForm f) {
-  return {}; 
+  return {[<x.name, x.loc> | AQuestion()]}; 
 }
