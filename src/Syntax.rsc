@@ -15,12 +15,7 @@ syntax Question
   = Str question Id variable ":" Type type
   | Str question Id variable ":" Type type "=" Expr expr
   | @Foldable "if" "(" Expr condition ")" "{" Question* thenQuestions "}"
-  | @Foldable "if" "(" Expr condition ")" "{" Question* thenQuestions "}" Else;
-
-
-// Removed Else from the Question syntax to be able to make the block foldable
-syntax Else
-  = @Foldable "else" "{" Question* elseQuestions "}";
+  | @Foldable "if" "(" Expr condition ")" "{" Question* thenQuestions "}" "else" "{" Question* elseQuestions "}";
 
 // TODO: +, -, *, /, &&, ||, !, >, <, <=, >=, ==, !=, literals (bool, int, str)
 // Think about disambiguation using priorities and associativity
