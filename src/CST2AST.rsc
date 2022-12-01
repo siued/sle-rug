@@ -16,12 +16,19 @@ import ParseTree;
  */
 
 AForm cst2ast(start[Form] sf) {
-  Form f = sf.top; // remove layout before and after form
-  return form("", [ ], src=f.src); 
+  return cst2ast(sf.top); // remove layout before and after form
 }
 
-default AQuestion cst2ast(Question q) {
-  throw "Not yet implemented <q>";
+AForm cst2ast(form:(Form)`form <Id name> { <Question* questions> }`) {
+  return form(cst2ast(name), [cst2ast(q) | q <- questions], src = form.src);
+}
+
+AQuestion cst2ast(q:(Question)`<Id text> <Id var> : <Type datatype>`) {
+  return question(cst2ast(text), cst2ast(var), cst2ast(datatype), src = q.src);
+}
+
+AQuestion cst2ast(q:(Question)`<Id text> <Id var> : <Type datatype> = <Expr expr>`) {
+  return question(cst2ast(text), cst2ast(var), cst2ast(datatype), cst2ast(expr), src = q.src);
 }
 
 AExpr cst2ast(Expr e) {
@@ -33,6 +40,15 @@ AExpr cst2ast(Expr e) {
   }
 }
 
-default AType cst2ast(Type t) {
-  throw "Not yet implemented <t>";
+AType cst2ast(Type t) {
+  switch (t) {
+    case (Type)`boolean`: return Bool;
+    case (Type)`integer`: return Int;
+    case (Type)`string`: return Str;
+    default: throw "Unhandled type: <t>";
+  }
+}
+
+AId cst2ast(Id i) {
+  return id("<i>", src=i.src);
 }

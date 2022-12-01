@@ -19,9 +19,9 @@ data AQuestion(loc src = |tmp:///|)
   ; 
 
 data AExpr(loc src = |tmp:///|)
-  = databool(AId x)
-  | dataint(AId x)
-  | datavar(AId x)
+  = datavar(bool bx)
+  | datavar(int ix)
+  | datavar(str sx)
   | not(AExpr expr)
   | mul(AExpr expr1, AExpr expr2)
   | div(AExpr expr1, AExpr expr2)
@@ -42,7 +42,7 @@ data AId(loc src = |tmp:///|)
   = id(str name);
 
 data AType(loc src = |tmp:///|)
-  = datatype("boolean")
-  | datatype("integer")
-  | datatype("string")
+  = booleanType()
+  | integerType()
+  | stringType()
   ;
