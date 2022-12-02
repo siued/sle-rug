@@ -8,12 +8,12 @@ module AST
  */
 
 data AForm(loc src = |tmp:///|)
-  = form(str name, list[AQuestion] questions)
+  = form(AId name, list[AQuestion] questions)
   ; 
 
 data AQuestion(loc src = |tmp:///|)
-  = question(str text, AId variable, AType datatype)
-  | question(str text, AId variable, AType datatype, AExpr expr)
+  = question(AStr text, AId variable, AType datatype)
+  | question(AStr text, AId variable, AType datatype, AExpr expr)
   | ifstatement(AExpr expr, list[AQuestion] questions)
   | ifelsestatement(AExpr expr, list[AQuestion] ifquestions, list[AQuestion] elsequestions)
   ; 
@@ -37,12 +37,14 @@ data AExpr(loc src = |tmp:///|)
   | or(AExpr expr1, AExpr expr2)
   ;
 
-
-data AId(loc src = |tmp:///|)
-  = id(str name);
-
 data AType(loc src = |tmp:///|)
   = booleanType()
   | integerType()
   | stringType()
   ;
+
+data AStr(loc src = |tmp:///|)
+  = string(str s);
+
+data AId(loc src = |tmp:///|)
+  = id(str name);

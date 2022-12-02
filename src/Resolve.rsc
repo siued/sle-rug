@@ -26,9 +26,9 @@ RefGraph resolve(AForm f) = <us, ds, us o ds>
   when Use us := uses(f), Def ds := defs(f);
 
 Use uses(AForm f) {
-  return {}; 
+  return [(x.loc, x.name) | datavar(x) := f]; 
 }
 
 Def defs(AForm f) {
-  return {[<x.name, x.loc> | AQuestion()]}; 
+  return [(x.name, x.loc) | question(_, x, _) := f]; 
 }
