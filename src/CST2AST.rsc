@@ -33,10 +33,10 @@ AQuestion cst2ast(Question q) {
       return question(cst2ast(text), cst2ast(var), cst2ast(datatype), cst2ast(expr), src = q.src);
     
     case (Question)`if ( <Expr e> ) { <Question* questions> }`:
-      return ifstatement(cst2ast(e), [cst2ast(q) | q <- questions]);
+      return ifstatement(cst2ast(e), [cst2ast(q) | Question q <- questions]);
     
     case (Question)`if ( <Expr e> ) { <Question* questions> } else { <Question* questions2> }`:
-      return ifelsestatement(cst2ast(e), [cst2ast(q) | q <- questions], [cst2ast(q) | q <- questions2]);
+      return ifelsestatement(cst2ast(e), [cst2ast(q) | Question q <- questions], [cst2ast(q) | Question q <- questions2]);
 
     default:
       throw "failed";
