@@ -19,7 +19,7 @@ data AQuestion(loc src = |tmp:///|)
   ; 
 
 data AExpr(loc src = |tmp:///|)
-  = datavar(bool bx)
+  = datavar(ABool bx)
   | datavar(int ix)
   | datavar(AId sx)
   | not(AExpr expr)
@@ -48,3 +48,6 @@ data AStr(loc src = |tmp:///|)
 
 data AId(loc src = |tmp:///|)
   = id(str name);
+
+data ABool(loc src = |tmp:///|)
+  = boolean(str val);
