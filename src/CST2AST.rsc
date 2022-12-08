@@ -45,7 +45,7 @@ AQuestion cst2ast(Question q) {
 
 AExpr cst2ast(Expr e) {
   switch (e) {
-    case (Expr)`<Id x>`: return datavar(("<x>"), src=x.src);
+    case (Expr)`<Id x>`: return datavar(cst2ast(x), src=x.src);
     case (Expr)`<Int i>`: return datavar(toInt("<i>"), src=i.src);
     case (Expr)`<Bool b>`: return datavar("<b>", src=b.src);
     case (Expr)`( <Expr e> )`: return cst2ast(e);
@@ -77,8 +77,8 @@ AType cst2ast(Type t) {
   }
 }
 
-AStr cst2ast(Str s) {
-  return string("<s>", src=s.src);
+AStr cst2ast(Str name) {
+  return string("<name>", src=name.src);
 }
 
 AId cst2ast(Id i) {

@@ -21,7 +21,7 @@ data AQuestion(loc src = |tmp:///|)
 data AExpr(loc src = |tmp:///|)
   = datavar(bool bx)
   | datavar(int ix)
-  | datavar(str sx)
+  | datavar(AId sx)
   | not(AExpr expr)
   | mul(AExpr expr1, AExpr expr2)
   | div(AExpr expr1, AExpr expr2)
@@ -44,7 +44,7 @@ data AType(loc src = |tmp:///|)
   ;
 
 data AStr(loc src = |tmp:///|)
-  = string(str s);
+  = string(str name);
 
 data AId(loc src = |tmp:///|)
   = id(str name);
