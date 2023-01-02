@@ -2,6 +2,7 @@ module Eval
 
 import AST;
 import Resolve;
+import IO;
 
 /*
  * Implement big-step semantics for QL
@@ -59,17 +60,38 @@ VEnv eval(AForm f, Input inp, VEnv venv) {
 
 VEnv evalOnce(AForm f, Input inp, VEnv venv) {
   venv[inp.question] = inp.\value;
-  // for (str s := venv) {
-  //   venv[s] = eval(expr, venv) where (/question(_, id(str s), _, AExpr expr) := f);
-  // }
-  return venv; 
+  for (AQuestion q <- f.questions) {
+    venv = eval(q, inp, venv);
+  }
+  return venv;
 }
 
 VEnv eval(AQuestion q, Input inp, VEnv venv) {
   // evaluate conditions for branching,
   // evaluate inp and computed questions to return updated VEnv
-
-  return (); 
+  switch (q) {
+    case question(_, id(str var), _, AExpr e): 
+    {
+      venv[var] = eval(e, venv);
+    }
+    case ifstatement(AExpr e, list[AQuestion] questions): 
+      if (eval(e, venv) == vbool(true)) {
+        for (question <- questions) {
+          venv = eval(question, inp, venv);
+        }
+      }
+    case ifelsestatement(AExpr e, list[AQuestion] questions1, list[AQuestion] questions2): 
+      if (eval(e, venv) == vbool(true)) {
+        for (question <- questions1) {
+          venv = eval(question, inp, venv);
+        }
+      } else {
+        for (question <- questions2) {
+          venv = eval(question, inp, venv);
+        }
+      }
+  }
+  return venv; 
 }
 
 Value eval(AExpr e, VEnv venv) {
