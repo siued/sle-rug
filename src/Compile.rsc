@@ -25,7 +25,25 @@ void compile(AForm f) {
 }
 
 HTMLElement form2html(AForm f) {
-  return html([]);
+  HTMLElement body = body([form([])]);
+  HTMLElement head = head([]);
+  HTMLElement input_elem;
+  for (AQuestion question <- f.questions)
+  {
+    question_elem = div([], name = question.text.name);
+    body.elems += [question_elem];
+    switch (question.datatype) {
+        case booleanType():
+            input_elem = input([], \type = "checkbox", name = question.variable);
+        case integerType():
+            input_elem = input([], \type = "number", name = question.variable);
+        case stringType():
+            input_elem = input([], \type = "text", name = question.variable);
+    }
+  }
+      
+  list[HTMLElement] elements = [head, body];
+  return html(elements);
 }
 
 str form2js(AForm f) {

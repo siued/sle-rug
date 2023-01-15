@@ -78,7 +78,7 @@ AType cst2ast(Type t) {
 }
 
 AStr cst2ast(Str name) {
-  return string("<name>", src=name.src);
+  return string(replaceAll("<name>", "\"", ""), src=name.src);
 }
 
 ABool cst2ast(Bool b) {
