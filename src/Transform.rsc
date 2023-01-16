@@ -29,7 +29,30 @@ import AST;
  */
  
 AForm flatten(AForm f) {
-  return f; 
+  AExpr e = datavar(boolean("true"));
+  list[AQuestion] flattened = [];
+  flattened += flatten(f.questions, e);
+  return form(f.name, flattened); 
+}
+
+list[AQuestion] flatten(list[AQuestion] questions, AExpr e) {
+  list[AQuestion] flattened = [];
+  for (AQuestion q <- questions) {
+    switch(q) {
+      case question(_, _, _):
+        flattened += ifstatement(e, [q]);
+      case question(_, _, _, _):
+        flattened += ifstatement(e, [q]);
+      case ifstatement(e1, qs):
+        flattened += flatten(qs, and(e, e1));
+      case ifelsestatement(e1, qs1, qs2):
+      {
+        flattened += flatten(qs1, and(e, e1));
+        flattened += flatten(qs2, and(e, not(e1)));
+      }
+    }
+  }
+  return flattened;
 }
 
 /* Rename refactoring:
@@ -40,6 +63,7 @@ AForm flatten(AForm f) {
  */
  
 start[Form] rename(start[Form] f, loc useOrDef, str newName, UseDef useDef) {
+  str name = useOrDef;
    return f; 
 } 
  

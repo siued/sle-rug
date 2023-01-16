@@ -2,6 +2,7 @@ module Compile
 
 import AST;
 import Resolve;
+import Transform;
 import IO;
 import lang::html::AST; // see standard library
 import lang::html::IO;
@@ -20,30 +21,55 @@ import lang::html::IO;
  */
 
 void compile(AForm f) {
-  writeFile(f.src[extension="js"].top, form2js(f));
-  writeFile(f.src[extension="html"].top, writeHTMLString(form2html(f)));
+  AForm flattened_f = flatten(f);
+  writeFile(f.src[extension="js"].top, form2js(flattened_f));
+  writeFile(f.src[extension="html"].top, writeHTMLString(form2html(flattened_f)));
 }
 
 HTMLElement form2html(AForm f) {
-  HTMLElement body = body([form([])]);
-  HTMLElement head = head([]);
-  HTMLElement input_elem;
-  for (AQuestion question <- f.questions)
-  {
-    question_elem = div([], name = question.text.name);
-    body.elems += [question_elem];
-    switch (question.datatype) {
-        case booleanType():
-            input_elem = input([], \type = "checkbox", name = question.variable);
-        case integerType():
-            input_elem = input([], \type = "number", name = question.variable);
-        case stringType():
-            input_elem = input([], \type = "text", name = question.variable);
-    }
-  }
+  HTMLElement head = makeHead(f);
+  HTMLElement body = makeBody(f);
       
   list[HTMLElement] elements = [head, body];
   return html(elements);
+}
+
+HTMLElement makeBody(AForm f) {
+  list[HTMLElement] divs = [];
+  HTMLElement h1 = h1([text(f.name.name)]);
+  divs += [h1];
+  for(AQuestion ifstatement <- f.questions) {
+    AQuestion question = ifstatement.questions[0];
+    HTMLElement label = label([text(question.text.name)], \for = question.variable.name);
+    HTMLElement xd = input();
+    switch (question.datatype) {
+      case booleanType():
+        xd = input(\type = "checkbox");
+      case stringType():
+        xd = input(\type = "text");
+      case integerType():
+        xd = input(\type = "number");
+    }
+    list[HTMLElement] e = [label, xd];
+    HTMLElement div = div(e, class = "form-group");
+    divs += [div];
+  }
+
+  HTMLElement submit = input(class = "form-group", \type = "submit", \value = "Submit");
+  divs += [submit];
+  HTMLElement form = form(divs);
+  HTMLElement d1 = div([form], name = "app");
+  HTMLElement script = script([text(form2js(f))]);
+  list[HTMLElement] elements = [d1, script];
+  return body(elements);
+}
+
+HTMLElement makeHead(AForm f) {
+  HTMLElement title = title([text(f.name.name)]);
+  // HTMLElement link = link([], \rel = "stylesheet", \type = "text/css", href = "styles.css");
+  HTMLElement script = script([], src = "https://cdn.jsdelivr.net/npm/vue/dist/vue.js");
+  list[HTMLElement] elements = [title, script];
+  return head(elements);
 }
 
 str form2js(AForm f) {
