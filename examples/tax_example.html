@@ -20,7 +20,7 @@
           <label for="hasSoldHouse">Did you sell a house in 2010?</label>
           <input type="checkbox" v-model="hasSoldHouse">
         </div>
-        <div class="form-group" v-if="hasSoldHouse">
+        <div class="form-group" v-if="hasSoldHouse && true">
           <label for="sellingPrice">What was the selling price?</label>
           <input type="number" v-model.number="sellingPrice">
         </div>

@@ -1,5 +1,6 @@
 module Compile
 
+import run;
 import AST;
 import Resolve;
 import Transform;
@@ -40,19 +41,37 @@ HTMLElement makeBody(AForm f) {
   divs += [h1];
   for(AQuestion ifstatement <- f.questions) {
     AQuestion question = ifstatement.questions[0];
-    HTMLElement label = label([text(question.text.name)], \for = question.variable.name);
-    HTMLElement xd = input();
-    switch (question.datatype) {
-      case booleanType():
-        xd = input(\type = "checkbox");
-      case stringType():
-        xd = input(\type = "text");
-      case integerType():
-        xd = input(\type = "number");
+    str condition = ExprToString(ifstatement.expr);
+    str htmlCode = "\<div class=\"form-group\" v-if=\"<condition>\"\>";
+    htmlCode += " \<label for=\"<question.variable.name>\"\><question.text.name>\</label\>";
+    switch (question) {
+      case 
+    } question(_, _, _)) {
+      str \type = "";
+      str model = "";
+      switch (question.datatype) {
+        case booleanType():
+        {
+          \type = "checkbox";
+          model = "v-model = \"<question.variable.name>\"";
+        }
+        case stringType():
+        {
+          \type = "text";
+          model = "v-model = \"<question.variable.name>\"";
+        }
+        case integerType():
+        {
+          \type = "number";
+          model = "v-model.number = \"<question.variable.name>\"";
+        }
+      }
+      htmlCode += " \<input type=\"<\type>\" <model>\"\>";
+    } else {
+      htmlCode += " \<input type=\"number\" :value = \"<question.variable.name>\" readonly\>";
     }
-    list[HTMLElement] e = [label, xd];
-    HTMLElement div = div(e, class = "form-group");
-    divs += [div];
+    htmlCode += "\</div\>";
+    divs += [text(htmlCode)];
   }
 
   HTMLElement submit = input(class = "form-group", \type = "submit", \value = "Submit");
@@ -66,10 +85,47 @@ HTMLElement makeBody(AForm f) {
 
 HTMLElement makeHead(AForm f) {
   HTMLElement title = title([text(f.name.name)]);
-  // HTMLElement link = link([], \rel = "stylesheet", \type = "text/css", href = "styles.css");
+  HTMLElement link = link(\rel = "stylesheet", \type = "text/css", href = "styles.css");
   HTMLElement script = script([], src = "https://cdn.jsdelivr.net/npm/vue/dist/vue.js");
   list[HTMLElement] elements = [title, script];
   return head(elements);
+}
+
+str ExprToString(AExpr expr) {
+  switch (expr) {
+    case datavar(boolean(x)):
+      return x;
+    case datavar(int x):
+      return "<x>";
+    case datavar(id(x)):
+      return x;
+    case not(x):
+      return "!" + ExprToString(x);
+    case mul(x, y):
+      return ExprToString(x) + " * " + ExprToString(y);
+    case div(x, y):
+      return ExprToString(x) + " / " + ExprToString(y);
+    case add(x, y):
+      return ExprToString(x) + " + " + ExprToString(y);
+    case sub(x, y):
+      return ExprToString(x) + " - " + ExprToString(y);
+    case lessthan(x, y):
+      return ExprToString(x) + " \< " + ExprToString(y);
+    case greaterthan(x, y):
+      return ExprToString(x) + " \> " + ExprToString(y);
+    case lessthanequal(x, y):
+      return ExprToString(x) + " \<= " + ExprToString(y);
+    case greaterthanequal(x, y):
+      return ExprToString(x) + " \>= " + ExprToString(y);
+    case equal(x, y):
+      return ExprToString(x) + " == " + ExprToString(y);
+    case notequal(x, y):
+      return ExprToString(x) + " != " + ExprToString(y);
+    case and(x, y):
+      return ExprToString(x) + " && " + ExprToString(y);
+    case or(x, y):
+      return ExprToString(x) + " || " + ExprToString(y);
+  }
 }
 
 str form2js(AForm f) {
