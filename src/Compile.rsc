@@ -7,6 +7,7 @@ import Transform;
 import IO;
 import lang::html::AST; // see standard library
 import lang::html::IO;
+import String;
 
 /*
  * Implement a compiler for QL to HTML and Javascript
@@ -24,7 +25,11 @@ import lang::html::IO;
 void compile(AForm f) {
   AForm flattened_f = flatten(f);
   writeFile(f.src[extension="js"].top, form2js(flattened_f));
-  writeFile(f.src[extension="html"].top, writeHTMLString(form2html(flattened_f)));
+  str html = writeHTMLString(form2html(flattened_f));
+  html = replaceAll(html, "&gt;", "\>");
+  html = replaceAll(html, "&lt;", "\<");
+  html = replaceAll(html, "&amp;", "&");
+  writeFile(f.src[extension="html"].top, html);
 }
 
 HTMLElement form2html(AForm f) {
@@ -45,39 +50,43 @@ HTMLElement makeBody(AForm f) {
     str htmlCode = "\<div class=\"form-group\" v-if=\"<condition>\"\>";
     htmlCode += " \<label for=\"<question.variable.name>\"\><question.text.name>\</label\>";
     switch (question) {
-      case 
-    } question(_, _, _)) {
-      str \type = "";
-      str model = "";
-      switch (question.datatype) {
-        case booleanType():
-        {
-          \type = "checkbox";
-          model = "v-model = \"<question.variable.name>\"";
-        }
-        case stringType():
-        {
-          \type = "text";
-          model = "v-model = \"<question.variable.name>\"";
-        }
-        case integerType():
-        {
-          \type = "number";
-          model = "v-model.number = \"<question.variable.name>\"";
-        }
+      case question(_, _, _):
+      {
+        str \type = "";
+        str model = "";
+        switch (question.datatype) {
+          case booleanType():
+          {
+            \type = "checkbox";
+            model = "v-model = \"<question.variable.name>\"";
+          }
+          case stringType():
+          {
+            \type = "text";
+            model = "v-model = \"<question.variable.name>\"";
+          }
+          case integerType():
+          {
+            \type = "number";
+            model = "v-model.number = \"<question.variable.name>\"";
+          }
       }
-      htmlCode += " \<input type=\"<\type>\" <model>\"\>";
-    } else {
+      htmlCode += " \<input type=\"<\type>\" <model>\>";
+      }
+      case question(_, _, _, _): 
+      {
       htmlCode += " \<input type=\"number\" :value = \"<question.variable.name>\" readonly\>";
+      }
     }
     htmlCode += "\</div\>";
+    htmlCode += "\n\n\n";
     divs += [text(htmlCode)];
   }
 
   HTMLElement submit = input(class = "form-group", \type = "submit", \value = "Submit");
   divs += [submit];
   HTMLElement form = form(divs);
-  HTMLElement d1 = div([form], name = "app");
+  HTMLElement d1 = div([form], id = "app");
   HTMLElement script = script([text(form2js(f))]);
   list[HTMLElement] elements = [d1, script];
   return body(elements);
