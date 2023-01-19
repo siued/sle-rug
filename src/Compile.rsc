@@ -9,6 +9,9 @@ import lang::html::AST; // see standard library
 import lang::html::IO;
 import String;
 
+// global variable to check if we are generating javascript or html for ExprToString function
+bool jsGenerating = false;
+
 /*
  * Implement a compiler for QL to HTML and Javascript
  *
@@ -24,7 +27,7 @@ import String;
 
 void compile(AForm f) {
   AForm flattened_f = flatten(f);
-  writeFile(f.src[extension="js"].top, form2js(flattened_f));
+  // writeFile(f.src[extension="js"].top, form2js(flattened_f));
   str html = writeHTMLString(form2html(flattened_f));
   html = replaceAll(html, "&gt;", "\>");
   html = replaceAll(html, "&lt;", "\<");
@@ -107,7 +110,7 @@ str ExprToString(AExpr expr) {
     case datavar(int x):
       return "<x>";
     case datavar(id(x)):
-      return x;
+      return jsGenerating ? "this." + x : x;
     case not(x):
       return "!" + ExprToString(x);
     case mul(x, y):
@@ -137,6 +140,51 @@ str ExprToString(AExpr expr) {
   }
 }
 
+
+
 str form2js(AForm f) {
-  return "";
+  jsGenerating = true;
+  str js = "";
+  js += "\n new Vue({\n  el: \'#app\',\n  data: {\n";
+  for (AQuestion ifstatement <- f.questions) {
+    AQuestion question = ifstatement.questions[0];
+    str condition = ExprToString(ifstatement.expr);
+    switch (question) {
+      case question(_, _, _):
+      {
+        switch (question.datatype) {
+          case booleanType():
+          {
+            js += "    <question.variable.name>: false,\n";
+          }
+          case stringType():
+          {
+            js += "    <question.variable.name>: \'\',\n";
+          }
+          case integerType():
+          {
+            js += "    <question.variable.name>: 0,\n";
+          }
+        }
+      }
+    }
+  }
+  js += "  },\n";
+  js += "  computed: {\n";
+  for(AQuestion ifstatement <- f.questions) {
+    AQuestion question = ifstatement.questions[0];
+    switch(question) {
+      case question(_, _, _, _):
+      {
+        js += "    <question.variable.name>: function() {\n";
+        js += "      return ";
+        js += ExprToString(question.expr);
+        js += "\n   },\n";
+      }
+    }
+  }
+  js += "  }\n";
+  js += "})\n";
+  jsGenerating = false;
+  return js;
 }

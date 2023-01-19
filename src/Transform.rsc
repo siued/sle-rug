@@ -3,6 +3,9 @@ module Transform
 import Syntax;
 import Resolve;
 import AST;
+import CST2AST;
+import ParseTree;
+import IO;
 
 /* 
  * Transforming QL forms
@@ -62,10 +65,25 @@ list[AQuestion] flatten(list[AQuestion] questions, AExpr e) {
  *
  */
  
-start[Form] rename(start[Form] f, loc useOrDef, str newName, UseDef useDef) {
-  str name = useOrDef;
-   return f; 
+start[Form] rename(start[Form] f, loc name, str newName) {
+  RefGraph r = resolve(cst2ast(f));
+  set[loc] toRename = {};
+  if(name in r.defs<1>) {
+    toRename += {name};
+    toRename += { u | <loc u, name> <- r.useDef};
+  } else if (name in r.uses<0>) {
+      if (<name, loc d> <- r.useDef) {
+        toRename += {d};
+        toRename += { u | <loc u, d> <- r.useDef};
+      } 
+  } else {
+        return f;
+  }
+  return visit (f) {
+    case Id variable => [Id]newName when variable@\loc in toRename
+  };
 } 
+
  
  
  
