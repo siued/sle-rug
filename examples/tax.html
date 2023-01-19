@@ -1,14 +1,14 @@
 <html>
     <head>
-        <title>taxOfficeExample</title>
+        <title>tax</title>
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     </head>
     <body>
         <div id="app">
             <form>
-                <h1>taxOfficeExample</h1><div class="form-group" v-if="true"> <label for="hasBoughtHouse">Did you buy a house in 2010?</label> <input type="checkbox" v-model = "hasBoughtHouse"></div> <div class="form-group" v-if="true"> <label for="hasMaintLoan">Did you enter a loan?</label> <input type="checkbox" v-model = "hasMaintLoan"></div> <div class="form-group" v-if="true"> <label for="hasSoldHouse">Did you sell a house in 2010?</label> <input type="checkbox" v-model = "hasSoldHouse"></div> <div class="form-group" v-if="true && hasSoldHouse"> <label for="sellingPrice">What was the selling price?</label> <input type="number" v-model.number = "sellingPrice"></div> <div class="form-group" v-if="true && hasSoldHouse"> <label for="privateDebt">Private debts for the sold house:</label> <input type="number" v-model.number = "privateDebt"></div> <div class="form-group" v-if="true && hasSoldHouse"> <label for="valueResidue">Value residue:</label> <input type="number" :value = "valueResidue" readonly></div> <input value="Submit" class="form-group" type="submit">
+                <h1>tax</h1><div class="form-group" v-if="true"> <label for="hasBoughtHouse">Did you buy a house in 2010?</label> <input type="checkbox" v-model = "hasBoughtHouse"></div> <div class="form-group" v-if="true"> <label for="hasMaintLoan">Did you enter a loan?</label> <input type="checkbox" v-model = "hasMaintLoan"></div> <div class="form-group" v-if="true"> <label for="hasSoldHouse">Did you sell a house in 2010?</label> <input type="checkbox" v-model = "hasSoldHouse"></div> <div class="form-group" v-if="true && hasSoldHouse"> <label for="sellingPrice">What was the selling price?</label> <input type="number" v-model.number = "sellingPrice"></div> <div class="form-group" v-if="true && hasSoldHouse"> <label for="privateDebt">Private debts for the sold house:</label> <input type="number" v-model.number = "privateDebt"></div> <div class="form-group" v-if="true && hasSoldHouse"> <label for="valueResidue">Value residue:</label> <input type="number" :value = "valueResidue" readonly></div> <input value="Submit" class="form-group" type="submit">
             </form>
         </div>
-        <script>new Vue({ el: '#app', data: { hasBoughtHouse: false, hasMaintLoan: false, hasSoldHouse: false, sellingPrice: 0, privateDebt: 0, }, computed: { valueResidue: function() { return this.sellingPrice - this.privateDebt } } })</script>
+        <script>new Vue({ el: '#app', data: { hasBoughtHouse: false, hasMaintLoan: false, hasSoldHouse: false, sellingPrice: 0, privateDebt: 0, }, computed: { valueResidue: function() { return this.sellingPrice - this.privateDebt }, } })</script>
     </body>
 </html>

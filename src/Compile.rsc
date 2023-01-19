@@ -27,8 +27,8 @@ bool jsGenerating = false;
 
 void compile(AForm f) {
   AForm flattened_f = flatten(f);
-  // writeFile(f.src[extension="js"].top, form2js(flattened_f));
   str html = writeHTMLString(form2html(flattened_f));
+  //hack because of string-generated html
   html = replaceAll(html, "&gt;", "\>");
   html = replaceAll(html, "&lt;", "\<");
   html = replaceAll(html, "&amp;", "&");
@@ -138,9 +138,8 @@ str ExprToString(AExpr expr) {
     case or(x, y):
       return ExprToString(x) + " || " + ExprToString(y);
   }
+  throw "Unknown expression type";
 }
-
-
 
 str form2js(AForm f) {
   jsGenerating = true;

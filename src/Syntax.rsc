@@ -26,8 +26,8 @@ syntax Expr
   | Id \ "true" \ "false" // true/false are reserved keywords.
   | "(" Expr ")"
   > right "!" Expr
-  > left Expr "*" Expr
-  | left Expr "/" Expr
+  > left (Expr "*" Expr
+  | left Expr "/" Expr)
   > left Expr "+" Expr
   | left Expr "-" Expr
   > non-assoc Expr "\<" Expr
